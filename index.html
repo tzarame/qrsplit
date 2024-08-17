@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Text Splitter</title>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+</head>
+<body>
+    <h1>QR Code Text Splitter</h1>
+
+    <textarea id="textInput" rows="10" cols="50" placeholder="Enter your text here..."></textarea>
+    <br>
+    <label for="chunkSize">Chunk Size:</label>
+    <input type="number" id="chunkSize" value="750" />
+    <button onclick="processText()">Generate QR Codes</button>
+    
+    <div id="qrCodes"></div>
+
+    <script>
+        const defaultChunkSize = 750; // Default chunk size
+
+        function processText() {
+            const textInput = document.getElementById('textInput').value;
+            const chunkSize = parseInt(document.getElementById('chunkSize').value) || defaultChunkSize;
+
+            generateQRCodeChunks(textInput, chunkSize);
+        }
+
+        function splitDataIntoChunks(data, chunkSize) {
+            const chunks = [];
+            for (let i = 0; i < data.length; i += chunkSize) {
+                chunks.push(data.slice(i, i + chunkSize));
+            }
+            return chunks;
+        }
+
+        function generateQRCodeChunks(data, chunkSize) {
+            const chunks = splitDataIntoChunks(data, chunkSize);
+            const qrCodesDiv = document.getElementById('qrCodes');
+            qrCodesDiv.innerHTML = ''; // Clear previous QR codes
+
+            chunks.forEach((chunk, index) => {
+                QRCode.toDataURL(chunk, { errorCorrectionLevel: 'L' }, function(err, url) {
+                    if (err) throw err;
+
+                    const img = document.createElement('img');
+                    img.src = url;
+                    qrCodesDiv.appendChild(img);
+                    qrCodesDiv.appendChild(document.createElement('br'));
+                });
+            });
+        }
+    </script>
+</body>
+</html>
