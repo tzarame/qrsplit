@@ -3,9 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Text to QR Codes with Advanced Features</title>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/blueimp-md5/js/md5.min.js"></script>
+    <title>Text to QR Codes</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -14,26 +12,29 @@
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
-            background-color: #f4f4f4;
-            touch-action: manipulation;
+            background-color: #f9f9f9;
         }
         .container {
-            background-color: #fff;
+            background-color: #ffffff;
             padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
         }
-        h1, h2 {
+        h2 {
             text-align: center;
-            color: #2c3e50;
+            color: #34495e;
+            font-size: 28px;
+            margin-bottom: 20px;
         }
         textarea, input, select, button {
             width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
+            padding: 12px;
+            margin-bottom: 15px;
             border: 1px solid #ddd;
-            border-radius: 4px;
+            border-radius: 6px;
             box-sizing: border-box;
+            font-size: 16px;
         }
         button {
             background-color: #3498db;
@@ -54,191 +55,92 @@
         .qr-code-container {
             text-align: center;
             width: 100%;
+            margin-bottom: 500px;
+            transition: margin-bottom 0.3s;
+        }
+        .qr-code-container:first-of-type {
+            margin-bottom: 0;
         }
         .qr-code-container img {
             width: 100%;
             height: auto;
             pointer-events: none;
             user-select: none;
+            border: 1px solid #ddd;
+            border-radius: 6px;
         }
-        #checksumInfo {
+        #debugBlock {
+            display: none;
+            margin-top: 10px;
+            padding: 15px;
+            background-color: #eaf2f8;
+            border-radius: 8px;
+            font-size: 15px;
+            white-space: pre-wrap;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        #debugBlock h3 {
+            text-align: center;
+            margin-top: 0;
+            font-size: 20px;
+            color: #2c3e50;
+        }
+        #debugBlock p, #debugBlock label, #debugBlock input {
+            margin: 8px 0;
+            display: block;
+        }
+        #debugCheckboxContainer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
             margin-top: 20px;
-            padding: 10px;
-            background-color: #e8f4f8;
-            border-radius: 4px;
         }
-        #textStats {
-            margin-bottom: 10px;
-            padding: 10px;
-            background-color: #f9f9f9;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-        .hidden {
-            display: none;
-        }
-        .settings-container {
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #f9f9f9;
-            border-radius: 4px;
-            display: none;
-        }
-        .notification {
-            position: fixed;
-            bottom: 10px;
-            right: 10px;
-            background-color: #4caf50;
-            color: white;
-            padding: 10px;
-            border-radius: 4px;
-            display: none;
+        #domainQRCodeContainer {
+            text-align: center;
+            margin-top: 40px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Text to QR Codes with Advanced Features</h1>
+        <h2>Text to QR Codes</h2>
         <textarea id="textInput" rows="10" placeholder="Enter your text here"></textarea>
-        <div id="textStats">
-            <p>Characters: <span id="charCount">0</span></p>
-            <p>Lines: <span id="lineCount">0</span></p>
-            <p>MD5 Hash: <span id="md5Hash">N/A</span></p>
-        </div>
-        <input type="number" id="chunkSize" min="100" max="2000" placeholder="Chunk size (100-2000 characters)">
-        
-        <label for="lineBreakOption">Replace line breaks with:</label>
+
+        <label for="lineBreakOption">Select Line Break Symbol:</label>
         <select id="lineBreakOption">
             <option value="none">Do nothing</option>
-            <option value="\\n">\\n</option>
-            <option value="\\r\\n">\\r\\n (Windows)</option>
-            <option value="\\r">\\r (Old Mac)</option>
+            <option value="\n">\n</option>
+            <option value="¶">¶</option>
+            <option value="^N^">^N^</option>
         </select>
-        
+
         <button id="generateBtn">Generate QR Codes</button>
-        <button id="clearBtn">Clear All</button>
-        
-        <button id="toggleSettingsBtn">Settings</button>
-        
-        <div class="settings-container" id="settingsContainer">
-            <label for="spacingOption">Vertical Spacing Between QR Codes (px):</label>
-            <input type="number" id="spacingOption" min="0" max="100" value="20">
-            
-            <button id="fillScreenBtn">Fill Screen with QR Codes</button>
-            <button id="autoScrollBtn">Enable Auto-Scroll</button>
-            <button id="soundDetectionBtn">Enable Sound Detection</button>
-            <button id="resetDefaultsBtn">Reset to Default</button>
-        </div>
 
         <div id="qrCodes"></div>
-        <div id="checksumInfo"></div>
+
+        <div id="debugBlock">
+            <h3>Debug Information</h3>
+            <p>Original Characters: <span id="charCount">0</span>, Original Lines: <span id="lineCount">0</span>, Original MD5 Hash: <span id="md5Hash">N/A</span></p>
+            <p>Modified Characters: <span id="modifiedCharCount">0</span>, Modified Lines: <span id="modifiedLineCount">0</span>, Modified MD5 Hash: <span id="modifiedMd5Hash">N/A</span></p>
+            <p>Modified Text with Line Breaks:</p>
+            <textarea id="modifiedText" rows="5" readonly></textarea>
+            <label for="chunkSize">Number of characters per QR code:</label>
+            <input type="number" id="chunkSize" min="100" max="2000" value="750">
+            <label for="verticalSpacing">Vertical Spacing Between QR Codes (px):</label>
+            <input type="number" id="verticalSpacing" value="500" min="0" max="1000">
+        </div>
+
+        <div id="debugCheckboxContainer">
+            <label for="debugCheckbox">Debug</label>
+            <input type="checkbox" id="debugCheckbox">
+        </div>
+
+        <div id="domainQRCodeContainer">
+            <img id="domainQRCode" src="" alt="Domain QR Code">
+        </div>
     </div>
-
-    <div class="notification" id="notification">Scanning Complete</div>
-
-    <script>
-        const textInput = document.getElementById('textInput');
-        const charCount = document.getElementById('charCount');
-        const lineCount = document.getElementById('lineCount');
-        const md5Hash = document.getElementById('md5Hash');
-        const chunkSizeInput = document.getElementById('chunkSize');
-        const lineBreakOption = document.getElementById('lineBreakOption');
-        const generateBtn = document.getElementById('generateBtn');
-        const clearBtn = document.getElementById('clearBtn');
-        const toggleSettingsBtn = document.getElementById('toggleSettingsBtn');
-        const settingsContainer = document.getElementById('settingsContainer');
-        const spacingOption = document.getElementById('spacingOption');
-        const fillScreenBtn = document.getElementById('fillScreenBtn');
-        const autoScrollBtn = document.getElementById('autoScrollBtn');
-        const soundDetectionBtn = document.getElementById('soundDetectionBtn');
-        const resetDefaultsBtn = document.getElementById('resetDefaultsBtn');
-        const qrCodesDiv = document.getElementById('qrCodes');
-        const checksumInfoDiv = document.getElementById('checksumInfo');
-        const notification = document.getElementById('notification');
-
-        let autoScrollEnabled = false;
-        let soundDetectionEnabled = false;
-
-        chunkSizeInput.value = localStorage.getItem('chunkSize') || '750';
-        spacingOption.value = localStorage.getItem('spacingOption') || '20';
-
-        function updateTextStats() {
-            const text = textInput.value;
-            charCount.textContent = text.length;
-            lineCount.textContent = text.split(/\r\n|\r|\n/).length;
-            md5Hash.textContent = md5(text);
-        }
-
-        function replaceLineBreaks(text, option) {
-            switch (option) {
-                case '\\n':
-                    return text.replace(/(\r\n|\r|\n)/g, '\n');
-                case '\\r\\n':
-                    return text.replace(/(\r\n|\r|\n)/g, '\r\n');
-                case '\\r':
-                    return text.replace(/(\r\n|\r|\n)/g, '\r');
-                default:
-                    return text; // No replacement
-            }
-        }
-
-        function splitText(text, chunkSize) {
-            const chunks = [];
-            for (let i = 0; i < text.length; i += chunkSize) {
-                chunks.push(text.slice(i, i + chunkSize));
-            }
-            return chunks;
-        }
-
-        function generateQRCode(text, index) {
-            return new Promise((resolve, reject) => {
-                QRCode.toDataURL(text, { errorCorrectionLevel: 'L' }, (err, url) => {
-                    if (err) reject(err);
-                    else {
-                        const container = document.createElement('div');
-                        container.className = 'qr-code-container';
-                        container.style.marginBottom = spacingOption.value + 'px';
-                        
-                        const img = document.createElement('img');
-                        img.src = url;
-                        img.alt = `QR Code ${index + 1}`;
-                        
-                        const label = document.createElement('p');
-                        label.textContent = `QR Code ${index + 1}`;
-                        
-                        container.appendChild(img);
-                        container.appendChild(label);
-                        resolve(container);
-                    }
-                });
-            });
-        }
-
-        function calculateMD5(text) {
-            return md5(text);
-        }
-
-        function resetToDefaults() {
-            localStorage.clear();
-            chunkSizeInput.value = '750';
-            spacingOption.value = '20';
-            autoScrollEnabled = false;
-            soundDetectionEnabled = false;
-            updateTextStats();
-        }
-
-        async function processText() {
-            let text = textInput.value;
-            const chunkSize = Math.min(Math.max(parseInt(chunkSizeInput.value) || 750, 100), 2000);
-            const lineBreakOptionValue = lineBreakOption.value;
-
-            localStorage.setItem('chunkSize', chunkSize);
-            localStorage.setItem('spacingOption', spacingOption.value);
-
-            text = replaceLineBreaks(text, lineBreakOptionValue);
-
-            const chunks = splitText(text, chunkSize);
-            const checksum = calculateMD5(text);
-
-            qrCodesDiv.innerHTML = '';
-            for (let i = 0; i < chunks.length; i++) {
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/blueimp-md5/js/md5.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
