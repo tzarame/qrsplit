@@ -1,0 +1,11 @@
+{
+  "name": "qrsplit",
+  "version": "1.0.0",
+  "description": "Text to QR code utility",
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
