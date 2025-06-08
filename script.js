@@ -62,13 +62,16 @@ function updateTextStats(text) {
     const lineBreakSymbol = lineBreakOption.value === 'none' ? '' : lineBreakOption.value;
     const modifiedTextValue = replaceLineBreaks(originalText, lineBreakSymbol);
 
+    const originalLines = originalText.split(/\r\n|\r|\n/);
+    const modifiedLines = modifiedTextValue.split(/\r\n|\r|\n/);
+
     charCount.textContent = originalText.length;
-    lineCount.textContent = originalText.split(/\r\n|\r|\n/).length;
+    lineCount.textContent = originalLines.length;
     md5Hash.textContent = md5(originalText);
 
     modifiedText.value = modifiedTextValue;
     modifiedCharCount.textContent = modifiedTextValue.length;
-    modifiedLineCount.textContent = modifiedTextValue.split(/\r\n|\r|\n/).length;
+    modifiedLineCount.textContent = modifiedLines.length;
     modifiedMd5Hash.textContent = md5(modifiedTextValue);
 
     debugBlock.style.display = debugCheckbox.checked && originalText.length > 0 ? 'block' : 'none';
@@ -100,7 +103,8 @@ function generateQRCode(text, index) {
             else {
                 const container = document.createElement('div');
                 container.className = 'qr-code-container';
-                container.style.marginBottom = index === 0 ? '0' : `${verticalSpacingInput.value}px`;
+                const spacing = parseInt(verticalSpacingInput.value, 10) || 0;
+                container.style.marginBottom = index === 0 ? '0' : `${spacing}px`;
                 
                 const img = document.createElement('img');
                 img.src = url;
@@ -136,15 +140,18 @@ async function processText() {
     const chunks = splitText(modifiedTextValue, chunkSize);
 
     qrCodesDiv.innerHTML = '';
+    const fragment = document.createDocumentFragment();
 
     for (let i = 0; i < chunks.length; i++) {
         try {
             const container = await generateQRCode(chunks[i], i);
-            qrCodesDiv.appendChild(container);
+            fragment.appendChild(container);
         } catch (error) {
             console.error('Error generating QR code:', error);
         }
     }
+
+    qrCodesDiv.appendChild(fragment);
 
     updateTextStats(text);
 }
