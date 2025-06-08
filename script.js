@@ -21,7 +21,11 @@ const defaultDomain = 'https://qr.tzara.me/'; // Default domain for the QR code 
 document.addEventListener('DOMContentLoaded', () => {
     const debugState = localStorage.getItem('debugState') === 'true';
     debugCheckbox.checked = debugState;
-    debugBlock.style.display = debugState ? 'block' : 'none';
+
+    // Ensure the debug block visibility matches the stored state and current
+    // text input. Using updateTextStats keeps the logic consistent with other
+    // interactions.
+    updateTextStats();
 
     const domain = defaultDomain;
     QRCode.toDataURL(domain, { errorCorrectionLevel: 'L' }, (err, url) => {
