@@ -1,2 +1,2 @@
 # qrsplit
-Simple JavaScript to convert text into the chain of qr codes
+Simple JavaScript to convert text into a chain of QR codes

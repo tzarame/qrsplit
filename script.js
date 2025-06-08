@@ -1,41 +1,62 @@
-const textInput = document.getElementById('textInput'); // Text input element
-const lineBreakOption = document.getElementById('lineBreakOption'); // Line break symbol selector
-const charCount = document.getElementById('charCount'); // Character count element
-const lineCount = document.getElementById('lineCount'); // Line count element
-const md5Hash = document.getElementById('md5Hash'); // MD5 hash element for original text
-const modifiedCharCount = document.getElementById('modifiedCharCount'); // Character count for modified text
-const modifiedLineCount = document.getElementById('modifiedLineCount'); // Line count for modified text
-const modifiedMd5Hash = document.getElementById('modifiedMd5Hash'); // MD5 hash for modified text
-const chunkSizeInput = document.getElementById('chunkSize'); // Chunk size input element
-const verticalSpacingInput = document.getElementById('verticalSpacing'); // Vertical spacing input element
-const generateBtn = document.getElementById('generateBtn'); // Generate QR codes button
-const qrCodesDiv = document.getElementById('qrCodes'); // Div to hold the generated QR codes
-const modifiedText = document.getElementById('modifiedText'); // Text area to show modified text
-const debugCheckbox = document.getElementById('debugCheckbox'); // Debug mode checkbox
-const debugBlock = document.getElementById('debugBlock'); // Debug block element
-const domainQRCode = document.getElementById('domainQRCode'); // QR code for the domain
+let textInput;
+let lineBreakOption;
+let charCount;
+let lineCount;
+let md5Hash;
+let modifiedCharCount;
+let modifiedLineCount;
+let modifiedMd5Hash;
+let chunkSizeInput;
+let verticalSpacingInput;
+let generateBtn;
+let qrCodesDiv;
+let modifiedText;
+let debugCheckbox;
+let debugBlock;
+let domainQRCode;
+
+if (typeof document !== 'undefined') {
+    textInput = document.getElementById('textInput'); // Text input element
+    lineBreakOption = document.getElementById('lineBreakOption'); // Line break symbol selector
+    charCount = document.getElementById('charCount'); // Character count element
+    lineCount = document.getElementById('lineCount'); // Line count element
+    md5Hash = document.getElementById('md5Hash'); // MD5 hash element for original text
+    modifiedCharCount = document.getElementById('modifiedCharCount'); // Character count for modified text
+    modifiedLineCount = document.getElementById('modifiedLineCount'); // Line count for modified text
+    modifiedMd5Hash = document.getElementById('modifiedMd5Hash'); // MD5 hash for modified text
+    chunkSizeInput = document.getElementById('chunkSize'); // Chunk size input element
+    verticalSpacingInput = document.getElementById('verticalSpacing'); // Vertical spacing input element
+    generateBtn = document.getElementById('generateBtn'); // Generate QR codes button
+    qrCodesDiv = document.getElementById('qrCodes'); // Div to hold the generated QR codes
+    modifiedText = document.getElementById('modifiedText'); // Text area to show modified text
+    debugCheckbox = document.getElementById('debugCheckbox'); // Debug mode checkbox
+    debugBlock = document.getElementById('debugBlock'); // Debug block element
+    domainQRCode = document.getElementById('domainQRCode'); // QR code for the domain
+}
 
 const defaultDomain = 'https://qr.tzara.me/'; // Default domain for the QR code at the bottom
 
 // Load the saved state of the debug checkbox and generate the domain QR code
-document.addEventListener('DOMContentLoaded', () => {
-    const debugState = localStorage.getItem('debugState') === 'true';
-    debugCheckbox.checked = debugState;
+if (typeof document !== 'undefined') {
+    document.addEventListener('DOMContentLoaded', () => {
+        const debugState = localStorage.getItem('debugState') === 'true';
+        debugCheckbox.checked = debugState;
 
     // Ensure the debug block visibility matches the stored state and current
     // text input. Using updateTextStats keeps the logic consistent with other
     // interactions.
-    updateTextStats();
+        updateTextStats();
 
     const domain = defaultDomain;
-    QRCode.toDataURL(domain, { errorCorrectionLevel: 'L' }, (err, url) => {
-        if (!err) {
-            domainQRCode.src = url;
-        }
+        QRCode.toDataURL(domain, { errorCorrectionLevel: 'L' }, (err, url) => {
+            if (!err) {
+                domainQRCode.src = url;
+            }
+        });
     });
-});
+}
 
-// Update text statistics and modified text display
+// Update text statistics, display modified text and toggle debug block
 function updateTextStats(text) {
     const originalText = text || textInput.value;
     const lineBreakSymbol = lineBreakOption.value === 'none' ? '' : lineBreakOption.value;
@@ -61,6 +82,9 @@ function replaceLineBreaks(text, symbol) {
 
 // Split the text into chunks based on the chunk size
 function splitText(text, chunkSize) {
+    if (typeof chunkSize !== 'number' || chunkSize <= 0) {
+        return [text];
+    }
     const chunks = [];
     for (let i = 0; i < text.length; i += chunkSize) {
         chunks.push(text.slice(i, i + chunkSize));
@@ -96,7 +120,11 @@ function generateQRCode(text, index) {
 // Process the text input and generate QR codes
 async function processText() {
     const text = textInput.value.trim();
-    const chunkSize = parseInt(chunkSizeInput.value) || 750;
+    let chunkSize = parseInt(chunkSizeInput.value, 10);
+    if (isNaN(chunkSize) || chunkSize <= 0) {
+        alert('Chunk size must be a positive integer. Using default of 750.');
+        chunkSize = 750;
+    }
 
     if (text.length === 0) {
         alert("Please enter some text to generate QR codes.");
@@ -129,13 +157,19 @@ function clearAll() {
     updateTextStats('');
 }
 
-// Event listeners
-textInput.addEventListener('input', () => updateTextStats());
-generateBtn.addEventListener('click', processText);
-debugCheckbox.addEventListener('change', function () {
-    const isChecked = debugCheckbox.checked;
-    debugBlock.style.display = isChecked && textInput.value.length > 0 ? 'block' : 'none';
-    localStorage.setItem('debugState', isChecked);
-});
+if (typeof document !== 'undefined') {
+    // Event listeners
+    textInput.addEventListener('input', () => updateTextStats());
+    generateBtn.addEventListener('click', processText);
+    debugCheckbox.addEventListener('change', function () {
+        const isChecked = debugCheckbox.checked;
+        debugBlock.style.display = isChecked && textInput.value.length > 0 ? 'block' : 'none';
+        localStorage.setItem('debugState', isChecked);
+    });
 
-updateTextStats();
+    updateTextStats();
+}
+
+if (typeof module !== 'undefined') {
+    module.exports = { replaceLineBreaks, splitText };
+}
