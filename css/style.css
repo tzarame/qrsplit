@@ -1,0 +1,219 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono&display=swap');
+
+:root {
+    --primary-color: #6366f1;
+    --primary-hover: #4f46e5;
+    --danger-color: #ef4444;
+    --danger-hover: #dc2828;
+    --bg-color: #f8fafc;
+    --card-bg: #ffffff;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+    --focus-ring: rgba(99, 102, 241, 0.5);
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    line-height: 1.6;
+    color: var(--text-main);
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    background-color: var(--bg-color);
+    -webkit-font-smoothing: antialiased;
+}
+
+.container {
+    background-color: var(--card-bg);
+    padding: 2.5rem;
+    border-radius: 1rem;
+    box-shadow: var(--shadow-md);
+    margin-bottom: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+h2 {
+    text-align: center;
+    color: var(--text-main);
+    font-size: 2rem;
+    font-weight: 600;
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.025em;
+}
+
+textarea,
+input[type="number"],
+select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.25rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    box-sizing: border-box;
+    font-size: 1rem;
+    font-family: inherit;
+    background-color: #fff;
+    color: var(--text-main);
+    transition: all 0.2s ease;
+}
+
+textarea {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    resize: vertical;
+}
+
+textarea:focus,
+input[type="number"]:focus,
+select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--text-main);
+    font-size: 0.95rem;
+}
+
+button {
+    background-color: var(--primary-color);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0.875rem 1.5rem;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-sm);
+}
+
+button:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-1px);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+#clearBtn {
+    background-color: var(--danger-color) !important;
+}
+
+#clearBtn:hover {
+    background-color: var(--danger-hover) !important;
+}
+
+#qrCodes {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 2rem;
+}
+
+.qr-code-container {
+    text-align: center;
+    width: 100%;
+    margin-bottom: 500px;
+    transition: margin-bottom 0.3s ease;
+    background: #fff;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    box-sizing: border-box;
+}
+
+.qr-code-container:first-of-type {
+    margin-bottom: 0;
+}
+
+.qr-code-container img {
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    pointer-events: none;
+    user-select: none;
+    border-radius: 0.5rem;
+}
+
+.qr-code-container p {
+    margin-top: 1rem;
+    margin-bottom: 0;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+#debugBlock {
+    display: none;
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background-color: #f1f5f9;
+    border-radius: 0.75rem;
+    font-size: 0.9rem;
+    border: 1px solid var(--border-color);
+}
+
+#debugBlock h3 {
+    text-align: left;
+    margin-top: 0;
+    font-size: 1.25rem;
+    color: var(--text-main);
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+#debugBlock p {
+    margin: 0.75rem 0;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+}
+
+#debugBlock span {
+    color: var(--text-main);
+    font-weight: 600;
+}
+
+#debugBlock textarea {
+    margin-top: 0.5rem;
+    background-color: #fff;
+}
+
+#debugCheckboxContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+#debugCheckboxContainer label {
+    margin-bottom: 0;
+    margin-right: 0.5rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+}
+
+body>p:last-child {
+    text-align: center;
+    color: #94a3b8;
+    font-size: 0.85rem;
+    margin-top: 1rem;
+    padding-bottom: 2rem;
+}
